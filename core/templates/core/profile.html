@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container" style="max-width: 850px;">
+    
+    <!-- Profile Header -->
+    <div class="row align-items-center mb-4 pb-3 border-bottom">
+        <div class="col-md-4 text-center mb-3 mb-md-0">
+            {% if profile.profile_pic %}
+            <img src="{{ profile.profile_pic.url }}" class="avatar-lg" alt="Profile Picture">
+            {% else %}
+            <div class="avatar-lg bg-secondary text-white d-inline-flex align-items-center justify-content-center fs-2 fw-bold">
+                {{ profile_user.username|slice:":1"|upper }}
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                <h4 class="mb-0 fw-normal">{{ profile_user.username }}</h4>
+                
+                {% if user == profile_user %}
+                <button class="btn btn-light btn-sm fw-bold border px-3" type="button" data-bs-toggle="collapse" data-bs-target="#editProfile">
+                    Edit Profile
+                </button>
+                {% else %}
+                <a href="{% url 'follow_user' profile_user.username %}" class="btn {% if is_following %}btn-light border{% else %}btn-primary{% endif %} btn-sm fw-bold px-4">
+                    {% if is_following %} Following {% else %} Follow {% endif %}
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="d-flex gap-4 mb-3">
+                <div><span class="fw-bold">{{ posts.count }}</span> posts</div>
+                <div>
+                    <span class="fw-bold">{{ profile.total_followers }}</span> 
+                    <span class="text-muted">followers</span>
+                </div>
+                <div>
+                    <span class="fw-bold">{{ profile_user.following.count }}</span> 
+                    <span class="text-muted">following</span>
+                </div>
+            </div>
+
+            <div>
+                <p class="mb-0 small text-secondary" style="white-space: pre-line;">{{ profile.bio|default:"No bio added yet." }}</p>
+            </div>
+
+            {% if user == profile_user %}
+            <div class="collapse mt-3" id="editProfile">
+                <div class="card card-body border p-3">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-sm btn-success fw-bold">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Posts Gallery -->
+    <h5 class="mb-3 fw-bold">Posts</h5>
+    <div class="row g-3">
+        {% for post in posts %}
+        <div class="col-4">
+            <div class="ratio ratio-1x1 overflow-hidden rounded bg-light border">
+                {% if post.image %}
+                <img src="{{ post.image.url }}" class="w-100 h-100 object-fit-cover" alt="Post">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center p-2 text-center text-muted small">
+                    {{ post.caption|truncatewords:4 }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted py-5">
+            <i class="fa-regular fa-image display-5 mb-2"></i>
+            <p>No posts published yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

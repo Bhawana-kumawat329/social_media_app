@@ -1,0 +1,89 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-10">
+
+        {% for post in posts %}
+        <div class="feed-card">
+            
+            <!-- Post Header -->
+            <div class="feed-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    {% if post.user.profile.profile_pic %}
+                    <img src="{{ post.user.profile.profile_pic.url }}" class="avatar-sm" alt="User">
+                    {% else %}
+                    <div class="avatar-sm bg-light d-flex align-items-center justify-content-center text-secondary fw-bold">
+                        {{ post.user.username|slice:":1"|upper }}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <a href="{% url 'profile' post.user.username %}" class="fw-bold text-dark text-decoration-none small">
+                            {{ post.user.username }}
+                        </a>
+                    </div>
+                </div>
+                <small class="text-muted" style="font-size: 0.75rem;">{{ post.created_at|timesince }} ago</small>
+            </div>
+
+            <!-- Media Image -->
+            {% if post.image %}
+            <img src="{{ post.image.url }}" class="post-media-img" alt="Post Content">
+            {% endif %}
+
+            <!-- Actions & Caption -->
+            <div class="p-3">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <a href="{% url 'like_post' post.id %}" class="action-btn {% if user in post.likes.all %}liked{% endif %}">
+                        {% if user in post.likes.all %}
+                        <i class="fa-solid fa-heart"></i>
+                        {% else %}
+                        <i class="fa-regular fa-heart"></i>
+                        {% endif %}
+                    </a>
+                    <button class="action-btn"><i class="fa-regular fa-comment"></i></button>
+                </div>
+
+                <div class="fw-bold mb-1 small">{{ post.total_likes }} likes</div>
+                
+                <p class="mb-2 small">
+                    <a href="{% url 'profile' post.user.username %}" class="fw-bold text-dark text-decoration-none me-1">
+                        {{ post.user.username }}
+                    </a>
+                    {{ post.caption }}
+                </p>
+
+                <hr class="my-2" style="opacity: 0.1;">
+
+                <!-- Real Comments -->
+                <div class="mb-2">
+                    {% for comment in post.comments.all %}
+                    <div class="d-flex justify-content-between align-items-center mb-1 small">
+                        <div>
+                            <span class="fw-bold me-1">{{ comment.user.username }}</span>
+                            <span>{{ comment.content }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-muted small">No comments yet.</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Add Comment Form -->
+                <form method="POST" action="{% url 'add_comment' post.id %}" class="d-flex align-items-center mt-3 border-top pt-2">
+                    {% csrf_token %}
+                    <input type="text" name="content" class="form-control form-control-sm border-0 shadow-none ps-0" placeholder="Add a comment..." required>
+                    <button type="submit" class="btn btn-sm btn-link fw-bold text-primary text-decoration-none pe-0">Post</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center p-5 bg-white border rounded shadow-sm">
+            <i class="fa-regular fa-paper-plane display-4 text-muted mb-3"></i>
+            <h5>Your Feed is Empty</h5>
+            <p class="text-muted small">Register new accounts or click below to publish your first post!</p>
+            <a href="{% url 'create_post' %}" class="btn btn-primary btn-sm px-4 fw-bold">+ Create Post</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
