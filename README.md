@@ -34,5 +34,5 @@ Ensure you have Python installed on your system.
 
 ### 2. Clone the Repository
 ```bash
-git clone [https://github.com/YOUR_GITHUB_USERNAME/CodeAlpha_SocialMediaPlatform.git](https://github.com/YOUR_GITHUB_USERNAME/CodeAlpha_SocialMediaPlatform.git)
+git clone [https://github.com/Bhawana-kumawat329/CodeAlpha_SocialMediaPlatform.git](https://github.com/YOUR_GITHUB_USERNAME/CodeAlpha_SocialMediaPlatform.git)
 cd CodeAlpha_SocialMediaPlatform
